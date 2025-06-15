@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delícias da RÊ - Pipocas Gourmet</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FFE0E6; /* Cor de fundo alterada para um rosa claro */
+            overflow-x: hidden; /* Evita rolagem horizontal */
+        }
+        /* Popcorn animation styles */
+        .popcorn-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Allows clicks to pass through */
+            z-index: 0; /* Ensures it's behind content */
+            overflow: hidden;
+        }
+        .popcorn {
+            position: absolute;
+            background-color: #FACC15; /* Amarelo milho */
+            border-radius: 50%;
+            opacity: 0;
+            animation: fall linear infinite;
+        }
+        .popcorn-large {
+            width: 30px;
+            height: 30px;
+            background-color: #FDE047; /* Amarelo mais claro */
+        }
+        .popcorn-medium {
+            width: 20px;
+            height: 20px;
+            background-color: #FACC15;
+        }
+        .popcorn-small {
+            width: 15px;
+            height: 15px;
+            background-color: #FBBF24; /* Amarelo mais escuro */
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(120vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Popcorn Animation Container -->
+    <div class="popcorn-container"></div>
+
+    <div class="relative z-10 min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-yellow-600 shadow-lg p-4 text-center rounded-b-lg">
+            <!-- Logomarca "Delícias da RÊ" -->
+            <!-- POR FAVOR, SUBSTITUA O 'src' ABAIXO PELO URL PÚBLICO DA SUA IMAGEM HOSPEDADA NA INTERNET -->
+            <img src="https://placehold.co/600x200/FACC15/FFF?text=SUA+LOGOMARCA+AQUI" alt="Logomarca Delícias da RÊ" class="mx-auto h-24 md:h-32 object-contain rounded-lg">
+        </header>
+
+        <!-- Navigation Bar -->
+        <nav class="bg-yellow-800 text-white p-3 shadow-md sticky top-0 z-20">
+            <div class="container mx-auto flex flex-wrap justify-center gap-4 text-lg font-semibold">
+                <button class="nav-link px-4 py-2 rounded-full hover:bg-yellow-700 transition duration-200" data-section="home">Home</button>
+                <button class="nav-link px-4 py-2 rounded-full hover:bg-yellow-700 transition duration-200" data-section="flavors">Sabores</button>
+                <button class="nav-link px-4 py-2 rounded-full hover:bg-yellow-700 transition duration-200" data-section="cart">Carrinho</button>
+                <button class="nav-link px-4 py-2 rounded-full hover:bg-yellow-700 transition duration-200" data-section="delivery">Entrega</button>
+                <button class="nav-link px-4 py-2 rounded-full hover:bg-yellow-700 transition duration-200" data-section="contact">Contato</button>
+            </div>
+        </nav>
+
+        <!-- Home Section -->
+        <section id="home" class="flex flex-col items-center justify-center text-center p-8 flex-grow">
+            <div class="bg-white p-8 rounded-2xl shadow-xl max-w-xl mx-auto border-4 border-yellow-400">
+                <p class="text-2xl md:text-3xl font-semibold text-orange-700 mb-6">
+                    Bem-vindo às pipocas mais deliciosas e gourmet da cidade!
+                </p>
+                <button id="make-order-button" class="bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-8 rounded-full shadow-lg transform transition duration-300 hover:scale-105 text-xl uppercase">
+                    FAZER PEDIDO
+                </button>
+            </div>
+        </section>
+
+        <!-- Flavors Section -->
+        <section id="flavors" class="hidden py-12 px-4 bg-blue-100 rounded-lg shadow-inner mx-4 my-8">
+            <h2 class="text-4xl font-extrabold text-orange-800 text-center mb-10 border-b-4 border-orange-500 pb-4">Nossos Sabores</h2>
+            <div id="flavors-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                <!-- Flavors will be dynamically loaded here -->
+            </div>
+        </section>
+
+        <!-- Cart Section -->
+        <section id="cart" class="hidden py-12 px-4 bg-blue-100 rounded-lg shadow-inner mx-4 my-8">
+            <h2 class="text-4xl font-extrabold text-orange-800 text-center mb-10 border-b-4 border-orange-500 pb-4">Seu Carrinho</h2>
+            <div id="cart-items" class="bg-white p-6 rounded-lg shadow-md max-w-3xl mx-auto">
+                <p id="empty-cart-message" class="text-center text-gray-600 italic">Seu carrinho está vazio.</p>
+                <!-- Cart items will be dynamically loaded here -->
+            </div>
+            <div class="flex flex-col md:flex-row justify-between items-center bg-white p-6 rounded-lg shadow-md max-w-3xl mx-auto mt-6 border-t-2 border-orange-300">
+                <div class="text-2xl font-bold text-orange-800 mb-4 md:mb-0">
+                    Total: <span id="cart-total">R$ 0,00</span>
+                </div>
+                <button id="finalize-order-button" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transform transition duration-300 hover:scale-105 text-lg uppercase" disabled>
+                    FINALIZAR COMPRA
+                </button>
+            </div>
+        </section>
+
+        <!-- Delivery Section -->
+        <section id="delivery" class="hidden py-12 px-4 bg-blue-100 rounded-lg shadow-inner mx-4 my-8">
+            <h2 class="text-4xl font-extrabold text-orange-800 text-center mb-10 border-b-4 border-orange-500 pb-4">Opções de Entrega</h2>
+            <div class="bg-white p-8 rounded-2xl shadow-xl max-w-2xl mx-auto border-4 border-yellow-400">
+                <p class="text-xl text-gray-700 mb-6 text-center">Como você gostaria de receber seu pedido?</p>
+
+                <div class="flex justify-center gap-6 mb-8">
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="delivery-option" value="delivery" class="form-radio h-5 w-5 text-yellow-600" checked>
+                        <span class="ml-2 text-lg font-medium text-gray-800">Entrega em Domicílio</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="delivery-option" value="pickup" class="form-radio h-5 w-5 text-yellow-600">
+                        <span class="ml-2 text-lg font-medium text-gray-800">Retirada Grátis</span>
+                    </label>
+                </div>
+
+                <!-- Delivery Options (conditionally displayed) -->
+                <div id="delivery-options" class="">
+                    <p class="text-lg text-gray-700 mb-4 text-center">Peça pelos nossos parceiros de delivery:</p>
+                    <div class="flex flex-col sm:flex-row justify-center gap-6 mb-8">
+                        <a href="https://www.ubereats.com/" target="_blank" class="bg-black hover:bg-gray-800 text-white font-bold py-3 px-6 rounded-full shadow-lg transform transition duration-300 hover:scale-105 text-lg flex items-center justify-center">
+                            <i class="fa-solid fa-utensils mr-2"></i> Uber Eats
+                        </a>
+                        <a href="https://99app.com/food/" target="_blank" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transform transition duration-300 hover:scale-105 text-lg flex items-center justify-center">
+                            <i class="fa-solid fa-motorcycle mr-2"></i> 99Pop Delivery
+                        </a>
+                    </div>
+                    <div class="mb-6">
+                        <label for="address" class="block text-gray-700 text-lg font-semibold mb-2">Ou insira seu endereço:</label>
+                        <input type="text" id="address" placeholder="Rua, número, bairro, cidade" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition duration-200">
+                    </div>
+                    <button id="current-location-button" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transform transition duration-300 hover:scale-105 text-lg w-full">
+                        <i class="fa-solid fa-location-dot mr-2"></i> Usar Localização Atual (Funcionalidade de Exemplo)
+                    </button>
+                </div>
+
+                <!-- Pickup Information (conditionally displayed) -->
+                <div id="pickup-info" class="hidden">
+                    <p class="text-xl text-gray-700 mb-4 text-center font-semibold">Seu pedido estará pronto para retirada no nosso endereço:</p>
+                    <p class="text-lg text-gray-600 text-center">Rua Exemplo, 123 - Bairro Central, Goiânia - GO</p>
+                    <p class="text-md text-gray-500 text-center mt-2">Um de nossos atendentes entrará em contato para combinar o horário da retirada.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact and Info Section -->
+        <section id="contact" class="py-12 px-4 bg-blue-100 rounded-lg shadow-inner mx-4 my-8">
+            <h2 class="text-4xl font-extrabold text-orange-800 text-center mb-10 border-b-4 border-orange-500 pb-4">Contato e Mais</h2>
+            <div class="bg-white p-8 rounded-2xl shadow-xl max-w-3xl mx-auto border-4 border-yellow-400 text-center">
+                <p class="text-xl text-gray-700 mb-6 leading-relaxed">
+                    Na **Delícias da RÊ**, nossa missão é levar a você uma experiência de sabor inesquecível.
+                    Utilizamos apenas os **melhores grãos de milho** e os **ingredientes mais frescos e selecionados**
+                    para criar pipocas gourmet que são verdadeiras obras de arte culinárias. Cada pipoca é feita com
+                    amor e dedicação para garantir a máxima qualidade e o sabor que você merece.
+                </p>
+                <div class="flex flex-col sm:flex-row justify-center gap-6 mt-8">
+                    <a href="https://wa.me/5562984733258" target="_blank" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transform transition duration-300 hover:scale-105 text-lg flex items-center justify-center">
+                        <i class="fab fa-whatsapp mr-2"></i> Pedir pelo WhatsApp
+                    </a>
+                    <a href="https://www.instagram.com/deliciasdare" target="_blank" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transform transition duration-300 hover:scale-105 text-lg flex items-center justify-center">
+                        <i class="fab fa-instagram mr-2"></i> @deliciasdare
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-yellow-700 text-white py-8 px-4 text-center rounded-t-lg mt-auto">
+            <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-3">Contato</h3>
+                    <p class="mb-1"><i class="fab fa-whatsapp mr-2"></i> (62) 98473-3258</p>
+                    <p><a href="https://www.instagram.com/deliciasdare" target="_blank" class="hover:underline"><i class="fab fa-instagram mr-2"></i> @deliciasdare</a></p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-3">Informações</h3>
+                    <ul>
+                        <li><a href="#" class="hover:underline">Política de Privacidade</a></li>
+                        <li><a href="#" class="hover:underline">Termos e Condições</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-3">Formas de Pagamento</h3>
+                    <p>Dinheiro, Pix</p>
+                    <div class="flex justify-center gap-2 mt-2">
+                        <!-- Icons for payment methods -->
+                        <i class="fa-solid fa-money-bill-wave text-2xl"></i> <!-- Dinheiro -->
+                        <i class="fa-solid fa-qrcode text-2xl"></i> <!-- Pix -->
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 pt-4 border-t border-yellow-600">
+                <p>&copy; 2025 Delícias da RÊ. Todos os direitos reservados.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Data for popcorn flavors
+        const flavors = [
+            {
+                id: 'ninho',
+                name: 'Ninho',
+                image: 'https://placehold.co/300x200/FACC15/FFF?text=Ninho',
+                description: 'Cremoso sabor de leite Ninho, um clássico delicioso.',
+                prices: { '50g': 8.50, '100g': 15.00 }
+            },
+            {
+                id: 'nutella',
+                name: 'Nutella',
+                image: 'https://placehold.co/300x200/5C3E24/FFF?text=Nutella',
+                description: 'A irresistível combinação de pipoca com o cremoso chocolate Nutella.',
+                prices: { '50g': 8.50, '100g': 15.00 }
+            },
+            {
+                id: 'ovomaltine',
+                name: 'Ovomaltine',
+                image: 'https://placehold.co/300x200/964B00/FFF?text=Ovomaltine',
+                description: 'Pipoca coberta com o crocante e maltado Ovomaltine.',
+                prices: { '50g': 8.50, '100g': 15.00 }
+            },
+            {
+                id: 'morango',
+                name: 'Morango',
+                image: 'https://placehold.co/300x200/E83F6F/FFF?text=Morango',
+                description: 'Doçura e frescor do morango em cada mordida.',
+                prices: { '50g': 8.50, '100g': 15.00 }
+            },
+            {
+                id: 'pe-de-moleque',
+                name: 'Pé de Moleque',
+                image: 'https://placehold.co/300x200/8B4513/FFF?text=Pé+de+Moleque',
+                description: 'A crocância do amendoim e o sabor do pé de moleque.',
+                prices: { '50g': 8.50, '100g': 15.00 }
+            },
+            {
+                id: 'churros',
+                name: 'Churros',
+                image: 'https://placehold.co/300x200/CD853F/FFF?text=Churros',
+                description: 'Com sabor de canela e açúcar, igual ao doce de churros.',
+                prices: { '50g': 8.50, '100g': 15.00 }
+            },
+            {
+                id: 'trufados',
+                name: 'Trufados',
+                image: 'https://placehold.co/300x200/362B28/FFF?text=Trufados',
+                description: 'Pipocas com um toque sofisticado de trufa.',
+                prices: { '50g': 8.50, '100g': 15.00 }
+            },
+            {
+                id: 'pacoca',
+                name: 'Paçoca',
+                image: 'https://placehold.co/300x200/DAA520/FFF?text=Paçoca',
+                description: 'O sabor autêntico e inconfundível da paçoca.',
+                prices: { '50g': 8.50, '100g': 15.00 }
+            },
+            {
+                id: 'doritos',
+                name: 'Doritos',
+                image: 'https://placehold.co/300x200/C62828/FFF?text=Doritos',
+                description: 'Uma explosão de sabor salgado com a intensidade do Doritos.',
+                prices: { '50g': 8.50, '100g': 15.00 }
+            },
+            {
+                id: 'bacon',
+                name: 'Bacon',
+                image: 'https://placehold.co/300x200/8B0000/FFF?text=Bacon',
+                description: 'Para os amantes do salgado: o defumado e irresistível sabor de bacon.',
+                prices: { '50g': 8.50, '100g': 15.00 }
+            },
+            {
+                id: 'caramelo-salgado',
+                name: 'Caramelo Salgado',
+                image: 'https://placehold.co/300x200/B8860B/FFF?text=Caramelo+Salgado',
+                description: 'O equilíbrio perfeito entre o doce e o salgado do caramelo.',
+                prices: { '50g': 8.50, '100g': 15.00 }
+            }
+        ];
+
+        let cart = []; // Array to store items in the cart
+        let deliveryOption = 'delivery'; // Default delivery option
+
+        // Get DOM elements
+        const homeSection = document.getElementById('home');
+        const flavorsSection = document.getElementById('flavors');
+        const cartSection = document.getElementById('cart');
+        const deliverySection = document.getElementById('delivery');
+        const contactSection = document.getElementById('contact');
+
+        const makeOrderButton = document.getElementById('make-order-button');
+        const flavorsGrid = document.getElementById('flavors-grid');
+        const cartItemsContainer = document.getElementById('cart-items');
+        const emptyCartMessage = document.getElementById('empty-cart-message');
+        const cartTotalSpan = document.getElementById('cart-total');
+        const finalizeOrderButton = document.getElementById('finalize-order-button');
+        const currentLocationButton = document.getElementById('current-location-button');
+
+        const deliveryOptionsRadios = document.querySelectorAll('input[name="delivery-option"]');
+        const deliveryOptionsDiv = document.getElementById('delivery-options');
+        const pickupInfoDiv = document.getElementById('pickup-info');
+        const addressInput = document.getElementById('address');
+
+
+        /**
+         * Hides all main sections and then shows the specified section.
+         * @param {HTMLElement} sectionToShow - The section to make visible.
+         */
+        function showSection(sectionToShow) {
+            homeSection.classList.add('hidden');
+            flavorsSection.classList.add('hidden');
+            cartSection.classList.add('hidden');
+            deliverySection.classList.add('hidden');
+            contactSection.classList.add('hidden');
+
+            sectionToShow.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top of the section
+        }
+
+        /**
+         * Renders the flavor cards on the Flavors section.
+         */
+        function renderFlavors() {
+            flavorsGrid.innerHTML = ''; // Clear existing flavors
+            flavors.forEach(flavor => {
+                const flavorCard = document.createElement('div');
+                flavorCard.className = 'bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center border-4 border-yellow-300 transform transition duration-300 hover:scale-105 hover:shadow-xl';
+                flavorCard.innerHTML = `
+                    <img src="${flavor.image}" alt="Pipoca de ${flavor.name}" class="w-48 h-32 object-cover rounded-xl mb-4 border-2 border-orange-200">
+                    <h3 class="text-2xl font-bold text-orange-700 mb-2 text-center">${flavor.name}</h3>
+                    <p class="text-gray-600 text-center mb-4 text-sm">${flavor.description}</p>
+                    <div class="flex flex-col items-center w-full">
+                        <div class="mb-3 text-lg font-semibold text-gray-800">
+                            <p>50g: R$ ${flavor.prices['50g'].toFixed(2).replace('.', ',')}</p>
+                            <p>100g: R$ ${flavor.prices['100g'].toFixed(2).replace('.', ',')}</p>
+                        </div>
+                        <div class="flex items-center space-x-2 mb-4">
+                            <label for="size-${flavor.id}" class="text-gray-700 font-medium">Tamanho:</label>
+                            <select id="size-${flavor.id}" class="p-2 border border-gray-300 rounded-lg focus:ring-yellow-500 focus:border-yellow-500">
+                                <option value="50g">50g</option>
+                                <option value="100g">100g</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center space-x-2 mb-4">
+                            <label for="quantity-${flavor.id}" class="text-gray-700 font-medium">Quantidade:</label>
+                            <input type="number" id="quantity-${flavor.id}" value="1" min="1" class="w-20 p-2 border border-gray-300 rounded-lg text-center focus:ring-yellow-500 focus:border-yellow-500">
+                        </div>
+                        <button data-flavor-id="${flavor.id}" class="add-to-cart-btn bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-6 rounded-full shadow-md transform transition duration-300 hover:scale-105 text-base uppercase">
+                            ADICIONAR AO CARRINHO
+                        </button>
+                    </div>
+                `;
+                flavorsGrid.appendChild(flavorCard);
+            });
+
+            // Add event listeners for "ADICIONAR AO CARRINHO" buttons
+            document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const flavorId = event.target.dataset.flavorId;
+                    const selectedFlavor = flavors.find(f => f.id === flavorId);
+                    const size = document.getElementById(`size-${flavorId}`).value;
+                    const quantity = parseInt(document.getElementById(`quantity-${flavorId}`).value);
+
+                    if (selectedFlavor && quantity > 0) {
+                        addToCart(selectedFlavor, size, quantity);
+                    }
+                });
+            });
+        }
+
+        /**
+         * Adds an item to the cart or updates its quantity if already present.
+         * @param {Object} flavor - The flavor object.
+         * @param {string} size - The selected size ('50g' or '100g').
+         * @param {number} quantity - The quantity to add.
+         */
+        function addToCart(flavor, size, quantity) {
+            const price = flavor.prices[size];
+            const existingItemIndex = cart.findIndex(item => item.id === flavor.id && item.size === size);
+
+            if (existingItemIndex > -1) {
+                cart[existingItemIndex].quantity += quantity;
+                cart[existingItemIndex].total = cart[existingItemIndex].quantity * cart[existingItemIndex].price;
+            } else {
+                cart.push({
+                    id: flavor.id,
+                    name: flavor.name,
+                    size: size,
+                    quantity: quantity,
+                    price: price,
+                    total: quantity * price
+                });
+            }
+            renderCart();
+            showSection(cartSection); // Navigate to cart after adding item
+        }
+
+        /**
+         * Renders the items in the shopping cart.
+         */
+        function renderCart() {
+            cartItemsContainer.innerHTML = ''; // Clear existing items
+            if (cart.length === 0) {
+                emptyCartMessage.classList.remove('hidden');
+                finalizeOrderButton.disabled = true;
+            } else {
+                emptyCartMessage.classList.add('hidden');
+                finalizeOrderButton.disabled = false;
+
+                cart.forEach((item, index) => {
+                    const cartItemDiv = document.createElement('div');
+                    cartItemDiv.className = 'flex items-center justify-between bg-yellow-100 p-4 rounded-lg shadow-sm mb-3 border border-yellow-200';
+                    cartItemDiv.innerHTML = `
+                        <div class="flex-grow">
+                            <p class="text-lg font-semibold text-orange-700">${item.name} (${item.size})</p>
+                            <p class="text-gray-600">Preço Unitário: R$ ${item.price.toFixed(2).replace('.', ',')}</p>
+                            <p class="text-gray-800 font-bold">Total: R$ ${item.total.toFixed(2).replace('.', ',')}</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <button class="quantity-btn bg-red-400 hover:bg-red-500 text-white p-1.5 rounded-full text-sm font-bold w-8 h-8 flex items-center justify-center" data-index="${index}" data-action="decrease">-</button>
+                            <span class="text-xl font-bold text-gray-800">${item.quantity}</span>
+                            <button class="quantity-btn bg-green-400 hover:bg-green-500 text-white p-1.5 rounded-full text-sm font-bold w-8 h-8 flex items-center justify-center" data-index="${index}" data-action="increase">+</button>
+                            <button class="remove-from-cart-btn bg-red-600 hover:bg-red-700 text-white p-2 rounded-full shadow-sm text-sm" data-index="${index}">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    `;
+                    cartItemsContainer.appendChild(cartItemDiv);
+                });
+
+                // Add event listeners for quantity buttons
+                document.querySelectorAll('.quantity-btn').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const index = parseInt(event.target.dataset.index);
+                        const action = event.target.dataset.action;
+                        if (action === 'increase') {
+                            cart[index].quantity++;
+                        } else if (action === 'decrease' && cart[index].quantity > 1) {
+                            cart[index].quantity--;
+                        }
+                        cart[index].total = cart[index].quantity * cart[index].price;
+                        renderCart();
+                    });
+                });
+
+                // Add event listeners for remove buttons
+                document.querySelectorAll('.remove-from-cart-btn').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const index = parseInt(event.target.dataset.index);
+                        cart.splice(index, 1);
+                        renderCart();
+                    });
+                });
+            }
+            updateCartTotal();
+        }
+
+        /**
+         * Updates the total price displayed in the cart.
+         */
+        function updateCartTotal() {
+            const total = cart.reduce((sum, item) => sum + item.total, 0);
+            cartTotalSpan.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        }
+
+        /**
+         * Generates a WhatsApp message based on the current cart content.
+         */
+        function generateWhatsAppMessage() {
+            if (cart.length === 0) {
+                return "Olá! Gostaria de fazer um pedido, mas meu carrinho está vazio.";
+            }
+
+            let message = "Olá! Gostaria de fazer o seguinte pedido:\n\n";
+            let total = 0;
+
+            cart.forEach(item => {
+                message += `${item.quantity}x ${item.name} (${item.size}) - R$ ${item.total.toFixed(2).replace('.', ',')}\n`;
+                total += item.total;
+            });
+
+            message += `\nTotal do Pedido: R$ ${total.toFixed(2).replace('.', ',')}\n`;
+
+            if (deliveryOption === 'delivery') {
+                message += `\nOpção de Entrega: Delivery\n`;
+                message += `Endereço para entrega: ${addressInput.value || 'Não informado'}\n`;
+            } else {
+                message += `\nOpção de Entrega: Retirada Grátis\n`;
+                message += `Retirada no endereço: Rua Exemplo, 123 - Bairro Central, Goiânia - GO\n`;
+            }
+
+            message += `\nAguardo confirmação!`;
+
+            return encodeURIComponent(message);
+        }
+
+        /**
+         * Toggles visibility of delivery options vs. pickup info based on selected radio button.
+         */
+        function toggleDeliveryOptions() {
+            deliveryOption = document.querySelector('input[name="delivery-option"]:checked').value;
+
+            if (deliveryOption === 'delivery') {
+                deliveryOptionsDiv.classList.remove('hidden');
+                pickupInfoDiv.classList.add('hidden');
+                addressInput.required = true; // Make address required for delivery
+            } else {
+                deliveryOptionsDiv.classList.add('hidden');
+                pickupInfoDiv.classList.remove('hidden');
+                addressInput.required = false; // Address not required for pickup
+                addressInput.value = ''; // Clear address when switching to pickup
+            }
+        }
+
+        /**
+         * Popcorn animation setup.
+         */
+        function createPopcorn() {
+            const container = document.querySelector('.popcorn-container');
+            const popcorn = document.createElement('div');
+            const sizes = ['popcorn-small', 'popcorn-medium', 'popcorn-large'];
+            const randomSizeClass = sizes[Math.floor(Math.random() * sizes.length)];
+
+            popcorn.className = `popcorn ${randomSizeClass}`;
+            popcorn.style.left = `${Math.random() * 100}vw`;
+            popcorn.style.animationDuration = `${Math.random() * 5 + 5}s`; // 5 to 10 seconds
+            popcorn.style.animationDelay = `-${Math.random() * 10}s`; // Start some off-screen
+
+            container.appendChild(popcorn);
+
+            // Remove popcorn element after it falls to prevent too many elements
+            popcorn.addEventListener('animationend', () => {
+                popcorn.remove();
+            });
+        }
+
+        // Create initial popcorn for a continuous rain effect
+        for (let i = 0; i < 50; i++) {
+            createPopcorn();
+        }
+        setInterval(createPopcorn, 500); // Create a new popcorn every 0.5 seconds
+
+        // Event Listeners
+        makeOrderButton.addEventListener('click', () => {
+            showSection(flavorsSection);
+            renderFlavors();
+        });
+
+        // Navigation links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (event) => {
+                const sectionId = event.target.dataset.section;
+                const sectionElement = document.getElementById(sectionId);
+                if (sectionElement) {
+                    showSection(sectionElement);
+                    if (sectionId === 'flavors') {
+                        renderFlavors();
+                    } else if (sectionId === 'cart') {
+                        renderCart();
+                    }
+                }
+            });
+        });
+
+
+        finalizeOrderButton.addEventListener('click', () => {
+            // Basic validation for delivery address
+            if (deliveryOption === 'delivery' && addressInput.value.trim() === '') {
+                alert('Por favor, insira o endereço para entrega.');
+                return;
+            }
+
+            const whatsappNumber = '5562984733258'; // Brazil + Goias DDD + number
+            const whatsappMessage = generateWhatsAppMessage();
+            window.open(`https://wa.me/${whatsappNumber}?text=${whatsappMessage}`, '_blank');
+        });
+
+        currentLocationButton.addEventListener('click', () => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    addressInput.value = `Latitude: ${lat}, Longitude: ${lon} (Localização aproximada)`;
+                    // In a real app, you'd reverse geocode this to a readable address
+                }, (error) => {
+                    console.error('Erro ao obter localização:', error);
+                    alert('Não foi possível obter sua localização atual. Por favor, insira o endereço manualmente.');
+                });
+            } else {
+                alert('Geolocalização não é suportada por este navegador. Por favor, insira o endereço manualmente.');
+            }
+        });
+
+        // Event listener for delivery option radios
+        deliveryOptionsRadios.forEach(radio => {
+            radio.addEventListener('change', toggleDeliveryOptions);
+        });
+
+        // Initial render: show home section and set default delivery option visibility
+        showSection(homeSection);
+        toggleDeliveryOptions(); // Call once to set initial visibility based on default radio
+    </script>
+</body>
+</html>
